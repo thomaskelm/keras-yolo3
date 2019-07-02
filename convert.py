@@ -12,6 +12,7 @@ from collections import defaultdict
 
 import numpy as np
 from keras import backend as K
+import tensorflow as tf
 from keras.layers import (Conv2D, Input, ZeroPadding2D, Add,
                           UpSampling2D, MaxPooling2D, Concatenate)
 from keras.layers.advanced_activations import LeakyReLU
@@ -35,6 +36,10 @@ parser.add_argument(
     '--weights_only',
     help='Save as Keras weights file instead of model file.',
     action='store_true')
+
+session_conf = tf.ConfigProto()
+session_conf.gpu_options.allow_growth = True
+sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
 
 def unique_config_sections(config_file):
     """Convert all config sections to have unique names.
@@ -85,7 +90,7 @@ def _main(args):
     cfg_parser.read_file(unique_config_file)
 
     print('Creating Keras model.')
-    input_layer = Input(shape=(None, None, 3))
+    input_layer = Input(shape=(416, 416, 3))
     prev_layer = input_layer
     all_layers = []
 
